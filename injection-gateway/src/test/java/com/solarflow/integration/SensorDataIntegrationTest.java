@@ -23,19 +23,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({VertxExtension.class, MockitoExtension.class})
+@ExtendWith({ VertxExtension.class, MockitoExtension.class })
 public class SensorDataIntegrationTest {
 
-    @Mock private MongoRepository mongoRepo;
-    @Mock private InfluxRepository influxRepo;
+    @Mock
+    private MongoRepository mongoRepo;
+    @Mock
+    private InfluxRepository influxRepo;
 
     private HttpServer server;
     private WebClient webClient;
 
+    /**
+     * Prepara el entorno de prueba antes de cada test.
+     * Crea un servidor HTTP con las rutas API y mocks de repositorios.
+     * 
+     * @param vertx       Instancia de Vert.x
+     * @param testContext Contexto de prueba
+     */
     @BeforeEach
     void setUp(Vertx vertx, VertxTestContext testContext) {
-        Router router = ApiRouter.create(vertx, AppConfig.fromJsonObject(new io.vertx.core.json.JsonObject()), mongoRepo, influxRepo);
-        // Desplegar en puerto dinámico para evitar conflictos si tienes el gateway encendido
+        Router router = ApiRouter.create(vertx, AppConfig.fromJsonObject(new io.vertx.core.json.JsonObject()),
+                mongoRepo, influxRepo);
+        // Desplegar en puerto dinámico para evitar conflictos si tienes el gateway
+        // encendido
         server = vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(0, testContext.succeeding(s -> {
@@ -49,6 +60,12 @@ public class SensorDataIntegrationTest {
         server.close(testContext.succeedingThenComplete());
     }
 
+    /**
+     * Prueba el endpoint POST /sensor-data que recibe y procesa datos de sensores.
+     * 
+     * @param vertx       Instancia de Vert.x
+     * @param testContext Contexto de prueba
+     */
     @Test
     void testPostSensorData_Integration_ShouldReturn202(Vertx vertx, VertxTestContext testContext) {
         // Arrange

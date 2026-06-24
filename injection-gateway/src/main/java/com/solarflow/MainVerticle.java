@@ -17,7 +17,7 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) {
-        log.info("⚙️ Iniciando secuencia de arranque de Vert.x...");
+        log.info(" Iniciando secuencia de arranque de Vert.x...");
 
         // 1. Cargar la configuración (application.json + variables de entorno)
         io.vertx.config.ConfigStoreOptions fileStore = new io.vertx.config.ConfigStoreOptions()
@@ -31,7 +31,7 @@ public class MainVerticle extends AbstractVerticle {
         ConfigRetriever retriever = ConfigRetriever.create(vertx, options);
         retriever.getConfig().onComplete(ar -> {
             if (ar.failed()) {
-                log.error("❌ Fallo crítico al cargar configuración", ar.cause());
+                log.error(" Fallo crítico al cargar configuración", ar.cause());
                 startPromise.fail(ar.cause());
                 return;
             }
@@ -46,7 +46,7 @@ public class MainVerticle extends AbstractVerticle {
                 mongoRepo = new MongoRepository(vertx, config);
                 influxRepo = new InfluxRepository(vertx, config);
             } catch (Exception e) {
-                log.error("❌ Fallo al inicializar conexiones de bases de datos", e);
+                log.error(" Fallo al inicializar conexiones de bases de datos", e);
                 startPromise.fail(e);
                 return;
             }
@@ -56,16 +56,16 @@ public class MainVerticle extends AbstractVerticle {
 
             // 4. Levantar el Servidor HTTP y atarlo al Router
             vertx.createHttpServer(new HttpServerOptions().setPort(config.serverPort()))
-                 .requestHandler(router)
-                 .listen(res -> {
-                     if (res.succeeded()) {
-                         log.info("🚀 Servidor HTTP desplegado y escuchando en el puerto {}", config.serverPort());
-                         startPromise.complete(); // Le avisa al Main que el despliegue fue 100% exitoso
-                     } else {
-                         log.error("❌ Fallo al arrancar Servidor HTTP (¿El puerto está en uso?)", res.cause());
-                         startPromise.fail(res.cause());
-                     }
-                 });
+                    .requestHandler(router)
+                    .listen(res -> {
+                        if (res.succeeded()) {
+                            log.info(" Servidor HTTP desplegado y escuchando en el puerto {}", config.serverPort());
+                            startPromise.complete(); // Le avisa al Main que el despliegue fue 100% exitoso
+                        } else {
+                            log.error(" Fallo al arrancar Servidor HTTP (¿El puerto está en uso?)", res.cause());
+                            startPromise.fail(res.cause());
+                        }
+                    });
         });
     }
 }

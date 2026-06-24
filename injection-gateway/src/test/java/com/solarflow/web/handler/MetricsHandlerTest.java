@@ -33,6 +33,11 @@ class MetricsHandlerTest {
         handler = new MetricsHandler(mongoRepo, influxRepo);
     }
 
+    /**
+     * Prueba el endpoint GET /metrics/recent que retorna las últimas métricas de un
+     * dispositivo.
+     * Verifica que el estado sea 200 OK y que los datos se devuelvan correctamente.
+     */
     @Test
     void getRecent_ShouldReturn200_WhenMongoSucceeds() {
         // Arrange
@@ -45,6 +50,11 @@ class MetricsHandlerTest {
         verify(mongoRepo).getRecentData("esp32_1", 10);
         verify(ctx).json(any()); // Comprueba que intentó devolver el JSON al usuario
     }
+
+    /**
+     * Prueba el endpoint GET /metrics/recent que retorna las últimas métricas de un
+     * dispositivo.
+     */
 
     @Test
     void getRecent_ShouldReturn500_WhenMongoFails() {

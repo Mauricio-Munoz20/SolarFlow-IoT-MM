@@ -7,9 +7,8 @@ package com.solarflow.util;
 
 public final class WaterLevelMapper {
     /* Utility class */
-
-    // Usamos un Array en lugar de un Map. Es más rápido en memoria y acceso
-    // ya que los índices del array coinciden exactamente con los números del ESP32.
+    // Usamos un Array en lugar de un Map. Es más rápido en memoria y acceso ya que
+    // los índices del array coinciden exactamente con los números del ESP32.
 
     private static final String[] LEVELS = { "0%", "25%", "50%", "75%", "100%" };
 

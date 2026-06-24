@@ -27,18 +27,28 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({VertxExtension.class, MockitoExtension.class})
+@ExtendWith({ VertxExtension.class, MockitoExtension.class })
 public class MetricsIntegrationTest {
 
-    @Mock private MongoRepository mongoRepo;
-    @Mock private InfluxRepository influxRepo;
+    @Mock
+    private MongoRepository mongoRepo;
+    @Mock
+    private InfluxRepository influxRepo;
 
     private HttpServer server;
     private WebClient webClient;
 
+    /**
+     * Prepara el entorno de prueba antes de cada test.
+     * Crea un servidor HTTP con las rutas API y mocks de repositorios.
+     * 
+     * @param vertx       Instancia de Vert.x
+     * @param testContext Contexto de prueba
+     */
     @BeforeEach
     void setUp(Vertx vertx, VertxTestContext testContext) {
-        Router router = ApiRouter.create(vertx, AppConfig.fromJsonObject(new io.vertx.core.json.JsonObject()), mongoRepo, influxRepo);
+        Router router = ApiRouter.create(vertx, AppConfig.fromJsonObject(new io.vertx.core.json.JsonObject()),
+                mongoRepo, influxRepo);
         server = vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(0, testContext.succeeding(s -> {
@@ -47,11 +57,23 @@ public class MetricsIntegrationTest {
                 }));
     }
 
+    /**
+     * Cierra el servidor HTTP después de cada prueba.
+     * 
+     * @param testContext Contexto de prueba
+     */
     @AfterEach
     void tearDown(VertxTestContext testContext) {
         server.close(testContext.succeedingThenComplete());
     }
 
+    /**
+     * Prueba el endpoint GET /metrics/recent que retorna las últimas métricas de un
+     * dispositivo.
+     * 
+     * @param vertx       Instancia de Vert.x
+     * @param testContext Contexto de prueba
+     */
     @Test
     void testGetRecentMetrics_Integration_ShouldReturn200(Vertx vertx, VertxTestContext testContext) {
         // Arrange
