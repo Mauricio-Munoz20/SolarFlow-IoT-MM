@@ -1,0 +1,98 @@
+name: infrastructure-taller5-minor
+
+services:
+  # MongoDB - Base de datos obligatoria (Actualizado a v8.0)
+  mongodb:
+    image: mongo:8.0
+    container_name: solarflow-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: solarflow
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongodb/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - solarflow-network
+    healthcheck:
+      # mongosh es el estándar actual (reemplaza al viejo "mongo")
+      test: [ "CMD", "mongosh", "--quiet", "localhost:27017/test", "--eval", "'db.runCommand(\"ping\").ok'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # InfluxDB IOx - Segunda base de datos (columnar / cutting edge)
+  influxdb:
+    image: quay.io/influxdb/influxdb3:latest
+    container_name: solarflow-influxdb
+    restart: unless-stopped
+    command: serve --host-id solarflow --object-store file --data-dir /var/lib/influxdb3 --http-bind 0.0.0.0:8086
+    environment:
+      INFLUXDB3_DB_NAME: solarflow_metrics
+      INFLUXDB3_ADMIN_TOKEN: ${INFLUX_ADMIN_TOKEN:-admin-token-change-me}
+    ports:
+      - "8086:8086" # HTTP API
+      - "8087:8087" # Flight SQL (Opcional, muy útil para IOx)
+    volumes:
+      - influxdb_data:/var/lib/influxdb3
+    networks:
+      - solarflow-network
+
+  # Grafana - Visualización y dashboards (Fijado a v11.x)
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: solarflow-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-piechart-panel,influxdata-flightsql-datasource
+      - INFLUX_ADMIN_TOKEN=${INFLUX_ADMIN_TOKEN}
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/json_dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - solarflow-network
+    depends_on:
+      influxdb:
+        condition: service_started # Estándar moderno de Compose
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Cloudflare Tunnel - Para exponer el backend (Activado por profile)
+  cloudflared:
+    image: cloudflare/cloudflared:2024.11.0 # Fijado a la versión estable reciente
+    container_name: solarflow-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    volumes:
+      - ./.cloudflare:/etc/cloudflared:ro
+    networks:
+      - solarflow-network
+      # depends_on:
+      # Como backend aún no está definido en este docker-compose, comento esta línea para que no falle al iniciar
+      # backend:
+      #   condition: service_started 
+    profiles:
+      - tunnel # Comando: docker compose --profile tunnel up -d
+
+networks:
+  solarflow-network:
+    driver: bridge
+    # Quitamos "name: solarflow-network" porque es redundante y automático en V2
+
+volumes:
+  mongodb_data:
+  influxdb_data:
+  grafana_data:

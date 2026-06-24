@@ -1,0 +1,12 @@
+{
+  "SERVER_PORT": 8080,
+
+  "MONGO_USER": "admin",
+  "MONGO_PASSWORD": "solarflow_secure_123",
+  "MONGO_DB": "solarflow",
+
+  "INFLUX_ADMIN_TOKEN": "my-super-secret-auth-token-solarflow-2026",
+  "INFLUX_URL": "http://127.0.0.1:8086",
+  "INFLUX_ORG": "solarflow",
+  "INFLUX_BUCKET": "solarflow_metrics"
+}

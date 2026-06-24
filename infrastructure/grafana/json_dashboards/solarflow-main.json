@@ -1,0 +1,16 @@
+{
+  "title": "SolarFlow Main Dashboard",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "text",
+      "title": "¡Bienvenido a SolarFlow!",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "content": "# Panel de Control IoT\n\nEste dashboard está pre-configurado mediante *Provisioning*. Cuando el ESP32 comience a enviar datos, podrás agregar las gráficas de Temperatura, Humedad y Nivel de Agua aquí usando FlightSQL o Flux."
+      }
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}

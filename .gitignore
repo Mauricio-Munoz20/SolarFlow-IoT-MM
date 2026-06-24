@@ -1,0 +1,43 @@
+# ===============
+# Java & Maven
+# ===============
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# ===============
+# Node & Frontend (Vite/React)
+# ===============
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm/
+
+# ===============
+# IDEs & OS
+# ===============
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+.gemini/
+
+# ===============
+# Documentos locales (no versionar)
+# ===============
+*.xlsx
+*.pdf
+
+# ===============
+# Logs, Credenciales y Bases de datos locales
+# ===============
+*.log
+.env
+infrastructure/.env
+infrastructure/mongodb/data/
+infrastructure/influxdb/data/
+infrastructure/grafana/data/
