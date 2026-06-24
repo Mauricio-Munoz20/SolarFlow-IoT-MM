@@ -17,7 +17,7 @@ SolarFlow-IoT-MM/
 │   ├── grafana/               # Provisioning y dashboards de Grafana
 │   ├── influxdb/              # Documentación de InfluxDB v3 (IOx)
 │   ├── mongodb/               # Scripts de inicialización (colecciones + datos de prueba)
-│   ├── .env                   # Variables de entorno (credenciales, no versionado)
+│   ├── .env                   # Variables de entorno (credenciales, no versionado. Usar .env.example para crear el .env)
 │   └── docker-compose.yml     # Orquestador de contenedores
 ├── injection-gateway/         # Backend reactivo (Java 18 + Vert.x 4)
 │   ├── src/main/java/com/solarflow/
