@@ -256,6 +256,7 @@ ESP32 (JSON) ──POST──▶ Injection Gateway (:8080)
 ## ⚠⚠⚠ Tareas Pendientes ⚠⚠⚠
 
 1. Implementar el frontend (ops-console) utilizando React, Typescript y TailwindCSS. Preferir polling sobre WebSockets.
-2. El endpoint relacionado con **GET /metrics/average** está fallando. Solucionarlo
+2. El endpoint relacionado con **GET /metrics/average** está fallando. Solucionarlo para que muestre los promedios horario
 3. Implementar el tunel con Cloudfare.
+4. Revisar cada salida de los endpoint y corregir si ocurren problemas o presenta datos incorrectos.
 
