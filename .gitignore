@@ -6,6 +6,7 @@ target/
 *.war
 *.ear
 *.class
+cp.txt
 
 # ===============
 # Node & Frontend (Vite/React)

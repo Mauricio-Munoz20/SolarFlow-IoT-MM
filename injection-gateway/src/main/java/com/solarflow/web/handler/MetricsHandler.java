@@ -36,21 +36,7 @@ public class MetricsHandler {
                 });
     }
 
-    /**
-     * Endpoint para obtener el promedio horario de temperatura (Idea del profe)
-     */
-    public void getHourlyAverage(RoutingContext ctx){
-        String deviceId = ctx.queryParam("deviceId")
-                .stream().findFirst().orElse("ESP32_001");
 
-        influxRepo.getHourlyAverage(deviceId).onSuccess(result
-        -> {ctx.json(ApiResponse.success("Promedio horario", result));
-        })
-                .onFailure(err -> {
-                    log.error("Error obteniendo el promedio: {}",  err.getMessage());
-                    ctx.fail(500, err);
-                });
-    }
 
 
 

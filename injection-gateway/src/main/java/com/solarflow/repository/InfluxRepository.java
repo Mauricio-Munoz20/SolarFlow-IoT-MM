@@ -39,10 +39,6 @@ public class InfluxRepository {
      *
      */
     public Future<Void> writeMetrics(SensorData data) {
-        // Locale.US se usa para evitar comas decimales
-        // MUY IMPORTANTE: InfluxDB odia los espacios antes o después del signo '='.
-        // El formato ESTRICTO es: measurement,tagK=tagV fieldK=fieldV,fieldK2=fieldV2
-        // timestamp
         String line = String.format(Locale.US,
                 "sensor_metrics,deviceId=%s temperatura=%f,humedad=%f,nivelAgua=%di %d000000",
                 data.deviceId(), data.temperatura(), data.humedad(), data.nivelAgua(), data.timestamp());
@@ -63,27 +59,4 @@ public class InfluxRepository {
                 .onFailure(err -> log.error(" Error escribiendo en IOx: {}", err.getMessage()));
     }
 
-    /**
-     * Consulta analítica: Promedio de temperatura por hora (Idea del profesor).
-     * Usa el endpoint /api/v3/query_sql de IOx v3.
-     */
-    public Future<JsonObject> getHourlyAverage(String deviceId) {
-        String sql = "SELECT DATE_TRUNC('hour', time) AS hour, AVG(temperatura) AS avg_temp " +
-                "FROM sensor_metrics WHERE deviceId = '" + deviceId + "' " +
-                "GROUP BY hour ORDER BY hour DESC LIMIT 24";
-
-        JsonObject body = new JsonObject().put("query", sql);
-
-        return client.postAbs(baseUrl + "/api/v3/query_sql?database=" + bucket)
-                .putHeader("Authorization", "Bearer " + token)
-                .putHeader("Content-Type", "application/json")
-                .sendJsonObject(body)
-                .compose(res -> {
-                    if (res.statusCode() == 200) {
-                        return Future.succeededFuture(res.bodyAsJsonObject());
-                    }
-                    return Future.failedFuture("Influx query failed: HTTP " + res.statusCode());
-                })
-                .onFailure(err -> log.error(" Error consultando IOx: {}", err.getMessage()));
-    }
 }

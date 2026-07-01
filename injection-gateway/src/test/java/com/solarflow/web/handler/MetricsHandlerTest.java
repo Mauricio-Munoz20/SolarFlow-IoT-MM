@@ -33,14 +33,8 @@ class MetricsHandlerTest {
         handler = new MetricsHandler(mongoRepo, influxRepo);
     }
 
-    /**
-     * Prueba el endpoint GET /metrics/recent que retorna las últimas métricas de un
-     * dispositivo.
-     * Verifica que el estado sea 200 OK y que los datos se devuelvan correctamente.
-     */
     @Test
     void getRecent_ShouldReturn200_WhenMongoSucceeds() {
-        // Arrange
         when(ctx.queryParam("deviceId")).thenReturn(List.of("esp32_1"));
         when(mongoRepo.getRecentData("esp32_1", 10))
                 .thenReturn(Future.succeededFuture(List.of(new JsonObject().put("temperatura", 25.0))));
@@ -48,17 +42,11 @@ class MetricsHandlerTest {
         handler.getRecent(ctx);
 
         verify(mongoRepo).getRecentData("esp32_1", 10);
-        verify(ctx).json(any()); // Comprueba que intentó devolver el JSON al usuario
+        verify(ctx).json(any());
     }
-
-    /**
-     * Prueba el endpoint GET /metrics/recent que retorna las últimas métricas de un
-     * dispositivo.
-     */
 
     @Test
     void getRecent_ShouldReturn500_WhenMongoFails() {
-        // Arrange
         when(ctx.queryParam("deviceId")).thenReturn(List.of("esp32_1"));
         Exception dbError = new RuntimeException("Mongo explotó");
         when(mongoRepo.getRecentData("esp32_1", 10)).thenReturn(Future.failedFuture(dbError));
@@ -69,16 +57,4 @@ class MetricsHandlerTest {
         verify(ctx, never()).json(any()); // Nunca debe enviar un JSON de éxito
     }
 
-    @Test
-    void getHourlyAverage_ShouldReturn200_WhenInfluxSucceeds() {
-        // Arrange
-        when(ctx.queryParam("deviceId")).thenReturn(List.of("esp32_1"));
-        JsonObject fakeInfluxResult = new JsonObject().put("avg_temp", 26.5);
-        when(influxRepo.getHourlyAverage("esp32_1")).thenReturn(Future.succeededFuture(fakeInfluxResult));
-
-        handler.getHourlyAverage(ctx);
-
-        verify(influxRepo).getHourlyAverage("esp32_1");
-        verify(ctx).json(any());
-    }
 }

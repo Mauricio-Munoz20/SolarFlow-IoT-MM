@@ -2,24 +2,17 @@
     <!-- Muestra los logs en la consola del IDE / Terminal -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <!-- Formato profesional: Hora [Hilo] NIVEL Clase - Mensaje -->
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Nivel global de logs: INFO (Muestra INFO, WARN y ERROR, pero oculta DEBUG) -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 
-    <!-- Reglas específicas para no llenar la consola de basura -->
-    
-    <!-- Vert.x Netty (Red) habla DEMASIADO. Lo callamos a menos que sea un error grave (WARN) -->
     <logger name="io.netty" level="WARN"/>
     
-    <!-- El cliente de Mongo a veces es ruidoso, lo dejamos en INFO -->
     <logger name="org.mongodb.driver" level="INFO"/>
 
-    <!-- Si quisieras ver los logs de "Métrica guardada" en desarrollo, cambia esto a DEBUG -->
     <logger name="com.solarflow" level="DEBUG"/>
 </configuration>

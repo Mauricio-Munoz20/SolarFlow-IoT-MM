@@ -38,13 +38,6 @@ public class MetricsIntegrationTest {
     private HttpServer server;
     private WebClient webClient;
 
-    /**
-     * Prepara el entorno de prueba antes de cada test.
-     * Crea un servidor HTTP con las rutas API y mocks de repositorios.
-     * 
-     * @param vertx       Instancia de Vert.x
-     * @param testContext Contexto de prueba
-     */
     @BeforeEach
     void setUp(Vertx vertx, VertxTestContext testContext) {
         Router router = ApiRouter.create(vertx, AppConfig.fromJsonObject(new io.vertx.core.json.JsonObject()),
@@ -57,30 +50,16 @@ public class MetricsIntegrationTest {
                 }));
     }
 
-    /**
-     * Cierra el servidor HTTP después de cada prueba.
-     * 
-     * @param testContext Contexto de prueba
-     */
     @AfterEach
     void tearDown(VertxTestContext testContext) {
         server.close(testContext.succeedingThenComplete());
     }
 
-    /**
-     * Prueba el endpoint GET /metrics/recent que retorna las últimas métricas de un
-     * dispositivo.
-     * 
-     * @param vertx       Instancia de Vert.x
-     * @param testContext Contexto de prueba
-     */
     @Test
     void testGetRecentMetrics_Integration_ShouldReturn200(Vertx vertx, VertxTestContext testContext) {
-        // Arrange
         when(mongoRepo.getRecentData(anyString(), anyInt()))
                 .thenReturn(Future.succeededFuture(List.of(new JsonObject().put("temperatura", 25.0))));
 
-        // Act & Assert
         webClient.get(server.actualPort(), "localhost", "/metrics/recent?deviceId=esp32_1")
                 .send(testContext.succeeding(response -> testContext.verify(() -> {
                     assertEquals(200, response.statusCode());

@@ -18,28 +18,31 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith({MockitoExtension.class})
+@ExtendWith({ MockitoExtension.class })
 class SensorDataHandlerTest {
-    @Mock private MongoRepository mongoRepo;
-    @Mock private InfluxRepository influxRepo;
-    @Mock private RoutingContext ctx;
-    @Mock private RequestBody requestBody;
-    @Mock private HttpServerResponse response;
+    @Mock
+    private MongoRepository mongoRepo;
+    @Mock
+    private InfluxRepository influxRepo;
+    @Mock
+    private RoutingContext ctx;
+    @Mock
+    private RequestBody requestBody;
+    @Mock
+    private HttpServerResponse response;
 
     private SensorDataHandler handler;
 
     @BeforeEach
     void setUp() {
-        handler = new  SensorDataHandler(mongoRepo, influxRepo);
+        handler = new SensorDataHandler(mongoRepo, influxRepo);
     }
 
     @Test
     void handle_ValidPayLoad_ShouldReturn202() {
-        // Arrange
-        SensorData validData =  new SensorData("esp32_1", 25.5, 60.0, 2, System.currentTimeMillis());
+        SensorData validData = new SensorData("esp32_1", 25.5, 60.0, 2, System.currentTimeMillis());
         String json = Json.encodePrettily(validData);
 
-        // 2. Simulamos lecturas del body
         when(ctx.body()).thenReturn(requestBody);
         when(requestBody.asString()).thenReturn(json);
 
@@ -59,9 +62,9 @@ class SensorDataHandlerTest {
         verify(mongoRepo).saveSensorData(any());
         verify(influxRepo).writeMetrics(any());
     }
+
     @Test
     void handle_InvalidWaterLevel_ShouldFailWith400() {
-        // Arrange
         SensorData invalidData = new SensorData("esp32_1", 25.5, 60.0, 5, System.currentTimeMillis());
         String json = Json.encodePrettily(invalidData);
 

@@ -34,19 +34,10 @@ public class SensorDataIntegrationTest {
     private HttpServer server;
     private WebClient webClient;
 
-    /**
-     * Prepara el entorno de prueba antes de cada test.
-     * Crea un servidor HTTP con las rutas API y mocks de repositorios.
-     * 
-     * @param vertx       Instancia de Vert.x
-     * @param testContext Contexto de prueba
-     */
     @BeforeEach
     void setUp(Vertx vertx, VertxTestContext testContext) {
         Router router = ApiRouter.create(vertx, AppConfig.fromJsonObject(new io.vertx.core.json.JsonObject()),
                 mongoRepo, influxRepo);
-        // Desplegar en puerto dinámico para evitar conflictos si tienes el gateway
-        // encendido
         server = vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(0, testContext.succeeding(s -> {
@@ -60,20 +51,12 @@ public class SensorDataIntegrationTest {
         server.close(testContext.succeedingThenComplete());
     }
 
-    /**
-     * Prueba el endpoint POST /sensor-data que recibe y procesa datos de sensores.
-     * 
-     * @param vertx       Instancia de Vert.x
-     * @param testContext Contexto de prueba
-     */
     @Test
     void testPostSensorData_Integration_ShouldReturn202(Vertx vertx, VertxTestContext testContext) {
-        // Arrange
         SensorData validData = new SensorData("esp32_1", 25.5, 60.0, 2, System.currentTimeMillis());
         when(mongoRepo.saveSensorData(any())).thenReturn(Future.succeededFuture());
         when(influxRepo.writeMetrics(any())).thenReturn(Future.succeededFuture());
 
-        // Act & Assert (Se simula un cliente HTTP real llamando a la API)
         webClient.post(server.actualPort(), "localhost", "/sensor-data")
                 .sendJson(validData, testContext.succeeding(response -> testContext.verify(() -> {
                     assertEquals(202, response.statusCode());

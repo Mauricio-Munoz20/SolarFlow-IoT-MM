@@ -17,26 +17,21 @@ public record AppConfig(
         String influxUrl,
         String influxToken,
         String influxOrg,
-        String influxBucket)
-{
+        String influxBucket) {
     private static final Logger log = LoggerFactory.getLogger(GlobalErrorHandler.class);
-
-    /**
-     * Construye la configuración fusionando ENV + JSON de Vert.x Config.
-     * Las variables de entorno tienen prioridad sobre el JSON.
-     */
 
     public static AppConfig fromJsonObject(JsonObject jsonObject) {
         int port = envInt("SERVER_PORT", jsonObject.getInteger("SERVERT_PORT", 8080));
         String mongoUri = env("MONGO_URI", String.format("mongodb://%s:%s@localhost:27017/",
-                jsonObject.getString("MONGO_USER", "admin"), jsonObject.getString("MONGO_PASSWORD", "solarflow_secure_123")));
+                jsonObject.getString("MONGO_USER", "admin"),
+                jsonObject.getString("MONGO_PASSWORD", "solarflow_secure_123")));
         String influxToken = env("INFLUX_ADMIN_TOKEN", jsonObject.getString("INFLUX_ADMIN_TOKEN", "default-token"));
 
         AppConfig config = new AppConfig(
-                port, 
-                mongoUri, 
+                port,
+                mongoUri,
                 jsonObject.getString("MONGO_DB", "solarflow"),
-                env("INFLUX_URL", "http://localhost:8086"), 
+                env("INFLUX_URL", "http://localhost:8086"),
                 influxToken,
                 env("INFLUX_ORG", "solarflow"),
                 env("INFLUX_BUCKET", "solarflow_metrics"));
@@ -56,8 +51,10 @@ public record AppConfig(
     private static int envInt(String key, int fallback) {
         String val = System.getenv(key);
         if (val != null && !val.isBlank()) {
-            try { return Integer.parseInt(val); }
-            catch (NumberFormatException e) { /* ignora, usa fallback */ }
+            try {
+                return Integer.parseInt(val);
+            } catch (NumberFormatException e) {
+                /* ignora, usa fallback */ }
         }
         return fallback;
     }
