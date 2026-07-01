@@ -51,6 +51,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-piechart-panel,influxdata-flightsql-datasource
       - INFLUX_ADMIN_TOKEN=${INFLUX_ADMIN_TOKEN}
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
     ports:
       - "3000:3000"
     volumes:
@@ -68,24 +70,18 @@ services:
       timeout: 5s
       retries: 5
 
-  # Cloudflare Tunnel - Para exponer el backend (Activado por profile)
+  # Cloudflare Tunnel - Para exponer el backend (Opción A: Quick Tunnel)
   cloudflared:
-    image: cloudflare/cloudflared:2024.11.0 # Fijado a la versión estable reciente
+    image: cloudflare/cloudflared:2024.11.0
     container_name: solarflow-tunnel
     restart: unless-stopped
-    command: tunnel run
-    environment:
-      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
-    volumes:
-      - ./.cloudflare:/etc/cloudflared:ro
+    command: tunnel --url http://host.docker.internal:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - solarflow-network
-      # depends_on:
-      # Como backend aún no está definido en este docker-compose, comento esta línea para que no falle al iniciar
-      # backend:
-      #   condition: service_started 
     profiles:
-      - tunnel # Comando: docker compose --profile tunnel up -d
+      - tunnel # Comando: docker compose --profile tunnel up
 
 networks:
   solarflow-network:
