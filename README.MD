@@ -1,10 +1,9 @@
-# Taller 5 BDNR - Plataforma IoT Industrial "SolarFlow"
+# SolarFlow — Sistema de Monitoreo & Telemetría Reactiva
 
 Plataforma de Internet de las Cosas (IoT) para ingesta, procesamiento y visualizacion de telemetria de sensores en tiempo real.
 
 Autores:
-- Mauricio Muñoz (mauricio.munoz01@alumnos.ucn.cl - 21.542.213-5)
-- Julian Honores (julian.honores@alumnos.ucn.cl - 21.328.088-0)
+- Mauricio Muñoz (mauriciomunozg12@gmail.com- 21.542.213-5)
 
 ---
 
